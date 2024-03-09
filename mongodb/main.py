@@ -54,8 +54,10 @@ if __name__ == "__main__":
         collection = config["COLLECTION_NAME"]
         if collection not in db.list_collection_names():
             db.create_collection(collection, check_exists=True)
+
         if args.seed:
             seed_collection()
+
         if command == "find_all":
             utils.find_all_records(db[collection])
         elif command == "find_by_name":
@@ -70,8 +72,6 @@ if __name__ == "__main__":
             utils.update_record_price(db[collection], name, price)
         elif command == "add_tag":
             utils.add_new_tag_to_record(db[collection], name, tag)
-        else:
-            print(f"Invalid command: {command}")            
     except Exception as e:
         print(f"Error: {e}")
 
