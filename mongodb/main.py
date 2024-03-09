@@ -46,33 +46,38 @@ if __name__ == "__main__":
         print("Connecting to MongoDB...")
         response = client.admin.command("ping")
         print("Connected:", response)
-    except ServerSelectionTimeoutError as e:
-        print("Failed to connect:", e)
 
-    try:
         db = client[config["DB_NAME"]]
         collection = config["COLLECTION_NAME"]
         if collection not in db.list_collection_names():
             db.create_collection(collection, check_exists=True)
 
         if args.seed:
-            seed_collection()
+            seed_collection()  # Ensure seed_collection function is properly called with the collection
+            if command and command not in COMMANDS:
+                raise ValueError(f"Invalid command: {command}")
+        elif command not in COMMANDS:
+            raise ValueError(f"Invalid command: {command}")
+        else:
+            # Your existing command execution logic here
+            if command == "find_all":
+                utils.find_all_records(db[collection])
+            elif command == "find_by_name":
+                utils.find_record_by_name(db[collection], name)
+            elif command == "delete_by_name":
+                utils.delete_record_by_name(db[collection], name)
+            elif command == "delete_all":
+                utils.delete_all_records(db[collection])
+            elif command == "add_record":
+                utils.add_new_record(db[collection], name, author, price, isbn, tag)
+            elif command == "update_record_price":
+                utils.update_record_price(db[collection], name, price)
+            elif command == "add_tag":
+                utils.add_new_tag_to_record(db[collection], name, tag)
 
-        if command == "find_all":
-            utils.find_all_records(db[collection])
-        elif command == "find_by_name":
-            utils.find_record_by_name(db[collection], name)
-        elif command == "delete_by_name":
-            utils.delete_record_by_name(db[collection], name)
-        elif command == "delete_all":
-            utils.delete_all_records(db[collection])
-        elif command == "add_record":
-            utils.add_new_record(db[collection], name, author, price, isbn, tag)
-        elif command == "update_record_price":
-            utils.update_record_price(db[collection], name, price)
-        elif command == "add_tag":
-            utils.add_new_tag_to_record(db[collection], name, tag)
+    except ValueError as e:
+        print(f"Error: {e}")
     except Exception as e:
         print(f"Error: {e}")
-
-    client.close()
+    finally:
+        client.close()
