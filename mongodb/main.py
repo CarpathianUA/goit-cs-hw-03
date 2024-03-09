@@ -53,7 +53,7 @@ if __name__ == "__main__":
             db.create_collection(collection, check_exists=True)
 
         if args.seed:
-            seed_collection()  # Ensure seed_collection function is properly called with the collection
+            seed_collection()
             if command and command not in COMMANDS:
                 raise ValueError(f"Invalid command: {command}")
         elif command not in COMMANDS:
