@@ -59,7 +59,6 @@ if __name__ == "__main__":
         elif command not in COMMANDS:
             raise ValueError(f"Invalid command: {command}")
         else:
-            # Your existing command execution logic here
             if command == "find_all":
                 utils.find_all_records(db[collection])
             elif command == "find_by_name":
