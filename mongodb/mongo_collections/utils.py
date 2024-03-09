@@ -17,8 +17,11 @@ def find_record_by_name(collection, name):
         collection: The collection to search in.
         name: The name of the record to search for.
     """
-    for record in collection.find({"name": name}):
-        print(record)
+    if collection.count_documents({"name": name}) > 0:
+        for record in collection.find({"name": name}):
+            print(record)
+    else:
+        print(f"Record {name} not found")
 
 
 def add_new_record(collection, name, author, price, isbn, tags):
@@ -61,8 +64,11 @@ def update_record_price(collection, name, new_price):
         The updated record.
     """
     try:
-        collection.update_one({"name": name}, {"$set": {"price": new_price}})
-        print(f"Updated price of {name} to {new_price}")
+        if collection.count_documents({"name": name}) > 0:
+            collection.update_one({"name": name}, {"$set": {"price": new_price}})
+            print(f"Updated price of {name} to {new_price}")
+        else:
+            print(f"Record {name} not found")
         return find_record_by_name(collection, name)
     except Exception as e:
         print(e)
@@ -81,9 +87,13 @@ def add_new_tag_to_record(collection, name, tag):
         The updated record with the new tag added.
     """
     try:
-        collection.update_one({"name": name}, {"$addToSet": {"tags": tag}})
-        print(f"Added {tag} to {name}")
-        return find_record_by_name(collection, name)
+        if collection.count_documents({"name": name}) > 0:
+            collection.update_one({"name": name}, {"$addToSet": {"tags": tag}})
+            print(f"Added {tag} to {name}")
+            return find_record_by_name(collection, name)
+        else:
+            print(f"Record {name} not found")
+            return None
     except Exception as e:
         print(e)
 
@@ -97,8 +107,11 @@ def delete_record_by_name(collection, name):
         name: The name of the record to be deleted.
     """
     try:
-        collection.delete_many({"name": name})
-        print(f"Deleted {name} from collection {collection.name}")
+        if collection.count_documents({"name": name}) > 0:
+            collection.delete_one({"name": name})
+            print(f"Deleted {name} from collection {collection.name}")
+        else:
+            print(f"Record {name} not found")
     except Exception as e:
         print(e)
 
