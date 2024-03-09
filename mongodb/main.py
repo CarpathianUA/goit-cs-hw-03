@@ -70,6 +70,8 @@ if __name__ == "__main__":
             utils.update_record_price(db[collection], name, price)
         elif command == "add_tag":
             utils.add_new_tag_to_record(db[collection], name, tag)
+        else:
+            print(f"Invalid command: {command}")            
     except Exception as e:
         print(f"Error: {e}")
 
