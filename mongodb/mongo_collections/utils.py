@@ -37,7 +37,7 @@ def add_new_record(collection, name, author, price, isbn, tags):
     - tags: the tags associated with the record
     """
     try:
-        collection.insert_one(
+        result = collection.insert_one(
             {
                 "name": name,
                 "author": author,
@@ -47,6 +47,7 @@ def add_new_record(collection, name, author, price, isbn, tags):
             }
         )
         print(f"Added {name} to collection {collection.name}")
+        print("ID of the inserted document:", result.inserted_id)
     except Exception as e:
         print(e)
 
