@@ -1,6 +1,5 @@
 import mongo_collections.utils as utils
 from pymongo import MongoClient
-from pymongo.errors import ServerSelectionTimeoutError
 from pymongo.server_api import ServerApi
 from dotenv import dotenv_values
 from argparse import ArgumentParser
