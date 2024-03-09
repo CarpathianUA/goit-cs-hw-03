@@ -48,35 +48,39 @@ if __name__ == "__main__":
         print("Connected:", response)
 
         db = client[config["DB_NAME"]]
-        collection = config["COLLECTION_NAME"]
-        if collection not in db.list_collection_names():
-            db.create_collection(collection, check_exists=True)
+        collection_name = config["COLLECTION_NAME"]
+        if collection_name not in db.list_collection_names():
+            db.create_collection(collection_name, check_exists=True)
+        collection = db[collection_name]
 
         if args.seed:
             seed_collection()
-            if command and command not in COMMANDS:
+
+        if command:
+            if command not in COMMANDS:
                 raise ValueError(f"Invalid command: {command}")
-        elif command not in COMMANDS:
-            raise ValueError(f"Invalid command: {command}")
-        else:
+
             if command == "find_all":
-                utils.find_all_records(db[collection])
+                utils.find_all_records(collection)
             elif command == "find_by_name":
-                utils.find_record_by_name(db[collection], name)
+                utils.find_record_by_name(collection, name)
             elif command == "delete_by_name":
-                utils.delete_record_by_name(db[collection], name)
+                utils.delete_record_by_name(collection, name)
             elif command == "delete_all":
-                utils.delete_all_records(db[collection])
+                utils.delete_all_records(collection)
             elif command == "add_record":
-                utils.add_new_record(db[collection], name, author, price, isbn, tag)
+                utils.add_new_record(collection, name, author, price, isbn, tag)
             elif command == "update_record_price":
-                utils.update_record_price(db[collection], name, price)
+                utils.update_record_price(collection, name, price)
             elif command == "add_tag":
-                utils.add_new_tag_to_record(db[collection], name, tag)
+                utils.add_new_tag_to_record(collection, name, tag)
+        elif not args.seed:
+            # If no command is provided and --seed is not used, raise an error
+            raise ValueError("No command provided and --seed flag not used.")
 
     except ValueError as e:
         print(f"Error: {e}")
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"General error: {e}")
     finally:
         client.close()
